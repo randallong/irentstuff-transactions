@@ -14,7 +14,7 @@ If conflict, return error message
 
 2. Multiple rental requests should be allowed if the item status is still "available"
 
-3. If an offer has been made by the renter for the same period, a second offer should not be allowed
+3. If an offer has been made by the renter for the same period, a second offer should not be allowed.
 """
 
 import boto3
