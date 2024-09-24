@@ -12,7 +12,7 @@ If an item status is returned as "active_rental", the rental period should be ch
 If no conflict, rental should be allowed to proceed.
 If conflict, return error message
 
-2. Multiple rental requests should be allowed if the item status is still "available".
+2. Multiple rental requests should be allowed if the item status is still "available"
 
 3. If an offer has been made by the renter for the same period, a second offer should not be allowed
 """
