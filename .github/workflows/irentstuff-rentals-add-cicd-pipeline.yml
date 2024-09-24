@@ -20,6 +20,13 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-1
+
       # Rental Add
       - name: Install dependencies for Rental Add Function
         if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-add')
@@ -35,10 +42,6 @@ jobs:
 
       - name: Deploy Rental Add Function to AWS Lambda
         if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-add')
-        uses: einaregilsson/lambda-deploy@v0.6.0
-        with:
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          function_name: irentstuff-rental-add
-          zip_file: ../irentstuff-rental-add.zip
+        run: |
+          aws lambda update-function-code --function-name irentstuff-rental-add --zip-file fileb://../irentstuff-rental-add.zip
   
