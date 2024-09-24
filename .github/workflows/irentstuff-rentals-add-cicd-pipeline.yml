@@ -29,19 +29,19 @@ jobs:
 
       # Rental Add
       - name: Install dependencies for Rental Add Function
-        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-add')
+        # if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-add')
         run: |
           cd irentstuff-rental-add
           pip install -r requirements.txt
 
       - name: Package Rental Add Function
-        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-add')
+        # if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-add')
         run: |
           cd irentstuff-rental-add
           zip -r ../irentstuff-rental-add.zip .
 
       - name: Deploy Rental Add Function to AWS Lambda
-        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-add')
+        # if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-add')
         run: |
           aws lambda update-function-code --function-name irentstuff-rental-add --zip-file fileb://../irentstuff-rental-add.zip
   
