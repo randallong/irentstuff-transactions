@@ -1,2 +1,36 @@
-requests==2.32.3
-pymysql==1.1.1
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Package Lambda function
+        run: |
+          zip -r ../irentstuff-rental-add.zip .
+
+      - name: Deploy to AWS Lambda
+        uses: einaregilsson/lambda-deploy@v0.6.0
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          function_name: irentstuff-rental-add
+          zip_file: ../irentstuff-rental-add.zip
+  
