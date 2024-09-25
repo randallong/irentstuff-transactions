@@ -1,4 +1,4 @@
-"""Retrieve a Rental from the Rentals db."""
+"""Retrieve a Rental from the Rentals db"""
 
 from decimal import Decimal
 
