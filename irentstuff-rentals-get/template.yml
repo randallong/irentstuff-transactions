@@ -1,0 +1,150 @@
+# This AWS SAM template has been generated from your function's configuration. If
+# your function has one or more triggers, note that the AWS resources associated
+# with these triggers aren't fully specified in this template and include
+# placeholder values. Open this template in AWS Application Composer or your
+# favorite IDE and modify it to specify a serverless application with other AWS
+# resources.
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: An AWS Serverless Application Model template describing your function.
+Resources:
+  irentstuffrentalsget:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src
+      Description: >-
+        Used to get rental details for a given {item_id}. Can provide
+        {rental_id} or use query string ?type=latest or ?type=all
+      MemorySize: 128
+      Timeout: 3
+      Handler: irentstuff-rentals-get.get_rentals
+      Runtime: python3.10
+      Architectures:
+        - x86_64
+      EphemeralStorage:
+        Size: 512
+      Environment:
+        Variables:
+          DB1_NAME: irentstuff_transactions
+          DB1_PASSWORD: mtech$111
+          DB1_RDS_PROXY_HOST: >-
+            proxy-1724937392315-irentstuff-transactions.proxy-cpqym0scccor.ap-southeast-1.rds.amazonaws.com
+          DB1_USER_NAME: irentstuffadmin
+      EventInvokeConfig:
+        MaximumEventAgeInSeconds: 21600
+        MaximumRetryAttempts: 2
+      Layers:
+        - !Ref Layer1
+        - !Ref Layer2
+      PackageType: Zip
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - sqs:ReceiveMessage
+                - sqs:DeleteMessage
+                - sqs:GetQueueAttributes
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: '*'
+            - Sid: AWSLambdaVPCAccessExecutionPermissions
+              Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+                - ec2:CreateNetworkInterface
+                - ec2:DescribeNetworkInterfaces
+                - ec2:DescribeSubnets
+                - ec2:DeleteNetworkInterface
+                - ec2:AssignPrivateIpAddresses
+                - ec2:UnassignPrivateIpAddresses
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - lambda:InvokeFunction
+              Resource:
+                - '*'
+            - Effect: Allow
+              Action:
+                - execute-api:Invoke
+                - execute-api:ManageConnections
+              Resource: arn:aws:execute-api:*:*:*
+            - Sid: GetSecretValue
+              Action:
+                - secretsmanager:GetSecretValue
+              Effect: Allow
+              Resource:
+                - >-
+                  arn:aws:secretsmanager:ap-southeast-1:211125595152:secret:rds-db-credentials/irentstuff-transactions/irentstuffadmin/1724937392315-A7bEQ9
+            - Sid: DecryptSecretValue
+              Action:
+                - kms:Decrypt
+              Effect: Allow
+              Resource:
+                - >-
+                  arn:aws:kms:ap-southeast-1:211125595152:key/alias/aws/secretsmanager
+              Condition:
+                StringEquals:
+                  kms:ViaService: secretsmanager.ap-southeast-1.amazonaws.com
+      RecursiveLoop: Terminate
+      SnapStart:
+        ApplyOn: None
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0728f6b7edffb742a
+          - sg-043213864453430a6
+          - sg-08b237edc8ee5c9bf
+        SubnetIds:
+          - subnet-0e729aa1558168349
+          - subnet-023934e5c210d5cea
+          - subnet-082abb03e7dcfe973
+        Ipv6AllowedForDualStack: false
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path:
+              name: /rentals/{item_id}
+              url: ' '
+            Method: GET
+        Api2:
+          Type: Api
+          Properties:
+            Path:
+              name: /rentals/{item_id}/{rental_id}
+              url: ' '
+            Method: GET
+      RuntimeManagementConfig:
+        UpdateRuntimeOn: Auto
+  # This resource represents your Layer with name pymysql. To download the
+# content of your Layer, go to
+# 
+# aws.amazon.com/go/view?arn=arn%3Aaws%3Alambda%3Aap-southeast-1%3A211125595152%3Alayer%3Apymysql%3A3&source=lambda
+  Layer1:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: ./pymysql
+      LayerName: pymysql
+      CompatibleRuntimes:
+        - python3.10
+        - python3.11
+        - python3.8
+        - python3.9
+        - python3.12
+  # This resource represents your Layer with name requests. To download the
+# content of your Layer, go to
+# 
+# aws.amazon.com/go/view?arn=arn%3Aaws%3Alambda%3Aap-southeast-1%3A211125595152%3Alayer%3Arequests%3A2&source=lambda
+  Layer2:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: ./requests
+      LayerName: requests
+      CompatibleRuntimes:
+        - python3.12
+        - python3.10
+        - python3.11
+        - python3.8
+        - python3.9

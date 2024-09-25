@@ -27,7 +27,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-southeast-1
 
-      # Rental Add
+      # **********[ irentstuff-rental-add ]**********
       - name: Install dependencies for Rental Add Function
         if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-add')
         run: |
@@ -46,10 +46,25 @@ jobs:
           aws lambda update-function-code --function-name irentstuff-rental-add --zip-file fileb://./irentstuff-rental-add.zip
 
       # Rental Update
+  
 
+      # **********[ irentstuff-rentals-get ]**********
+      - name: Install dependencies for Rentals Get Function
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rentals-get')
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff-rentals-get
+          pip install -r requirements.txt
 
-      # Rental Get
+      - name: Package Rentals Get Function
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rentals-get')
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff-rentals-get
+          zip -r ../irentstuff-rentals-get.zip .
 
+      - name: Deploy Rentals Get Function to AWS Lambda
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rentals-get')
+        run: |
+          aws lambda update-function-code --function-name irentstuff-rentals-get --zip-file fileb://./irentstuff-rentals-get.zip
 
       # Rental User
 
