@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "irentstuff-rental-add/**"
+      - "irentstuff-rental-update/**"
       - "irentstuff-rentals-get/**"
     branches:
       - main
@@ -46,8 +47,23 @@ jobs:
         run: |
           aws lambda update-function-code --function-name irentstuff-rental-add --zip-file fileb://./irentstuff-rental-add.zip
 
-      # Rental Update
-  
+      # **********[ irentstuff-rental-update ]**********
+      - name: Install dependencies for Rental Update Function
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-update')
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff-rental-update
+          pip install -r requirements.txt
+
+      - name: Package Rental Update Function
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-update')
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff-rental-update
+          zip -r ../irentstuff-rental-update.zip .
+
+      - name: Deploy Rental Update Function to AWS Lambda
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-update')
+        run: |
+          aws lambda update-function-code --function-name irentstuff-rental-update --zip-file fileb://./irentstuff-rental-update.zip
 
       # **********[ irentstuff-rentals-get ]**********
       - name: Install dependencies for Rentals Get Function
