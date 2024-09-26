@@ -6,6 +6,7 @@ on:
       - "irentstuff-rental-add/**"
       - "irentstuff-rental-update/**"
       - "irentstuff-rentals-get/**"
+      - "irentstuff-rental-user/**"
     branches:
       - main
 
@@ -84,7 +85,22 @@ jobs:
           aws lambda update-function-code --function-name irentstuff-rentals-get --zip-file fileb://./irentstuff-rentals-get.zip
 
       # Rental User
+      - name: Install dependencies for Rentals User Function
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-user')
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff-rental-user
+          pip install -r requirements.txt
 
+      - name: Package Rentals User Function
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-user')
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff-rental-user
+          zip -r ../irentstuff-rental-user.zip .
+
+      - name: Deploy Rentals User Function to AWS Lambda
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-rental-user')
+        run: |
+          aws lambda update-function-code --function-name irentstuff-rental-user --zip-file fileb://./irentstuff-rental-user.zip
 
       # Purchase Add
 
