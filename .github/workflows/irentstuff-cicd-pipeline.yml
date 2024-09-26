@@ -166,4 +166,20 @@ jobs:
           aws lambda update-function-code --function-name irentstuff-purchase-get --zip-file fileb://./irentstuff-purchase-get.zip
 
 
-      # Purchase User
+      # **********[ irentstuff-purchase-user ]**********
+      - name: Install dependencies for Purchase User Function
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-purchase-user')
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff-purchase-user
+          pip install -r requirements.txt
+
+      - name: Package Purchase User Function
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-purchase-user')
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff-purchase-user
+          zip -r ../irentstuff-purchase-user.zip .
+
+      - name: Deploy Purchase User Function to AWS Lambda
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-purchase-user')
+        run: |
+          aws lambda update-function-code --function-name irentstuff-purchase-user --zip-file fileb://./irentstuff-purchase-user.zip
