@@ -10,7 +10,7 @@ on:
       - "irentstuff-purchase-add/**"
       - "irentstuff-purchase-update/**"
       - "irentstuff-purchase-get/**"
-      - "irentstuff-purchase-purchase/**"
+      - "irentstuff-purchase-user/**"
     branches:
       - main
 

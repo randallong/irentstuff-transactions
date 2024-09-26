@@ -1,5 +1,5 @@
 """Retrieve purchases related to a user from the Purchases table in the Transactions DB"""
- 
+
 import json
 import logging
 import pymysql
