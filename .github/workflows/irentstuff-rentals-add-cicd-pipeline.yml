@@ -8,6 +8,7 @@ on:
       - "irentstuff-rentals-get/**"
       - "irentstuff-rental-user/**"
       - "irentstuff-purchase-add/**"
+      - "irentstuff-purchase-update/**"
     branches:
       - main
 
@@ -126,7 +127,23 @@ jobs:
           aws lambda update-function-code --function-name irentstuff-purchase-add --zip-file fileb://./irentstuff-purchase-add.zip
 
 
-      # Purchase Update
+      # **********[ irentstuff-purchase-update ]**********
+      - name: Install dependencies for Purchase Update Function
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-purchase-update')
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff-purchase-update
+          pip install -r requirements.txt
+
+      - name: Package Purchase Update Function
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-purchase-update')
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff-purchase-update
+          zip -r ../irentstuff-purchase-update.zip .
+
+      - name: Deploy Purchase Update Function to AWS Lambda
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-purchase-update')
+        run: |
+          aws lambda update-function-code --function-name irentstuff-purchase-update --zip-file fileb://./irentstuff-purchase-update.zip
 
 
       # Purchase Get
