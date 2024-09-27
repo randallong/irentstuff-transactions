@@ -1,4 +1,4 @@
-"""Script to authenticate the requestor's role relative to the item"""
+"""Script to authenticate the requestor's role relative to the item (owner or renter/buyer)"""
 
 import json
 import logging
