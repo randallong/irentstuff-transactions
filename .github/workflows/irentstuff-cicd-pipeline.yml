@@ -11,6 +11,7 @@ on:
       - "irentstuff-purchase-update/**"
       - "irentstuff-purchase-get/**"
       - "irentstuff-purchase-user/**"
+      - "irentstuff-authenticate-user/**"
     branches:
       - main
 
@@ -184,3 +185,22 @@ jobs:
         if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-purchase-user')
         run: |
           aws lambda update-function-code --function-name irentstuff-purchase-user --zip-file fileb://./irentstuff-purchase-user.zip
+
+        
+        # **********[ irentstuff-authenticate-user ]**********
+      - name: Install dependencies for Authenticate User Function
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-authenticate-user')
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff-authenticate-user
+          pip install -r requirements.txt
+
+      - name: Package Authenticate User Function
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-authenticate-user')
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff-authenticate-user
+          zip -r ../irentstuff-authenticate-user.zip .
+
+      - name: Deploy Authenticate User Function to AWS Lambda
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'irentstuff-authenticate-user')
+        run: |
+          aws lambda update-function-code --function-name irentstuff-authenticate-user --zip-file fileb://./irentstuff-authenticate-user.zip
