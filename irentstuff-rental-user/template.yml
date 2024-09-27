@@ -105,9 +105,7 @@ Resources:
         Api1:
           Type: Api
           Properties:
-            Path:
-              name: /rentals/user/{user_id}
-              url: ' '
+            Path: /rentals/user/{user_id}
             Method: GET
       RuntimeManagementConfig:
         UpdateRuntimeOn: Auto

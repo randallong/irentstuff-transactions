@@ -105,9 +105,7 @@ Resources:
         Api1:
           Type: Api
           Properties:
-            Path:
-              name: /purchases/{item_id}/add
-              url: ' '
+            Path: /purchases/{item_id}/add
             Method: POST
       RuntimeManagementConfig:
         UpdateRuntimeOn: Auto

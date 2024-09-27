@@ -106,9 +106,7 @@ Resources:
         Api1:
           Type: Api
           Properties:
-            Path:
-              name: /rentals/{item_id}/{rental_id}/{action}
-              url: ' '
+            Path: /rentals/{item_id}/{rental_id}/{action}
             Method: PATCH
       RuntimeManagementConfig:
         UpdateRuntimeOn: Auto
