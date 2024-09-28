@@ -21,7 +21,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { owner, repo } = github.context.repo;
+            const owner = github.context.repo.owner;
+            const repo = github.context.repo.repo;
             await github.rest.actions.createWorkflowDispatch({
               owner: owner,
               repo: repo,
