@@ -21,9 +21,10 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.rest.actions.createWorkflowDispatch({
-              owner: github.context.repo.owner,
-              repo: github.context.repo.repo,
+            const { owner, repo } = github.context.repo;
+            await github.rest.actions.createWorkflowDispatch({
+              owner: owner,
+              repo: repo,
               workflow_id: 'irentstuff-purchase-user.yml',
               ref: 'main'
             })
