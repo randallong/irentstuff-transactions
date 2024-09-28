@@ -10,12 +10,22 @@ jobs:
     name: Orchestrate Lambda deployments
     runs-on: ubuntu-latest
 
+    permissions:
+      actions: write
+      contents: read
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Debug GitHub context
         run: echo "${{ toJson(github) }}"
+
+      - name: Log owner and repo
+        run: echo "${{ github.context.repo.owner }}", ${{ github.context.repo.repo }}"
+
+      - name: Log owner and repo
+        run: echo "${{ github.context.repository }}", ${{ github.context.repository_owner }}"
 
       # **********[ irentstuff-purchase-user ]*********
       - name: Trigger irentstuff-purchase-user workflow
