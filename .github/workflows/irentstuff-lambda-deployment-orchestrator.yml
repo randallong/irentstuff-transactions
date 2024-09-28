@@ -1,0 +1,28 @@
+name: Lambda Deployment Orchestrator
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Orchestrate Lambda deployments
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # **********[ irentstuff-purchase-user ]**********
+      - name: Trigger irentstuff-purchase-user workflow
+        if: contains(github.event.head_commit.message, 'irentstuff-purchase-user')
+        uses: actions/github-script@v4
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: '${{ github.repository_owner }}',
+              repo: '${{ github.event.repository.name }}',
+              workflow_id: 'irentstuff-purchase-user.yml',
+              ref: 'main'
+            })

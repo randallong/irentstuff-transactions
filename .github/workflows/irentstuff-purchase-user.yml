@@ -1,0 +1,28 @@
+name: irentstuff-purchase-user deployment pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy irentstuff-purchase-user
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff-purchase-user
+          pip install -r requirements.txt
+
+      - name: Package and deploy Lambda
+        run: |
+          zip -r ../irentstuff-purchase-user.zip .
+          aws lambda update-function-code --function-name irentstuff-purchase-user --zip-file fileb://../irentstuff-purchase-user.zip
