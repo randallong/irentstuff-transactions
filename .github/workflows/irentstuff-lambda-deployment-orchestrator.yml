@@ -18,6 +18,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Log environment variables
+        run: env
+
+      - name: Debug GitHub context (repo owner)
+        run: echo "Owner - ${{ github.repository_owner }}"
+
+      - name: Debug GitHub context (repository)
+        run: echo "Repo - ${{ github.repository }}"
+
+      - name: Debug GitHub context (ref)
+        run: echo "Ref - ${{ github.ref }}"
+
+      - name: Debug GitHub context (workflow)
+        run: echo "Workflow ${{ github.workflow }}"
+
       - name: Debug GitHub context
         run: echo "${{ toJson(github) }}"
 
