@@ -15,7 +15,7 @@ Resources:
       Description: ''
       MemorySize: 128
       Timeout: 3
-      Handler: irentstuff-purchase-get.get_purchase
+      Handler: irentstuff_purchase_get.get_purchase
       Runtime: python3.10
       Architectures:
         - x86_64
