@@ -17,18 +17,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Check commit message for irentstuff-purchase-user
+      - name: Check commit message for irentstuff_purchase_user
         id: set_outputs
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff-purchase-user"* ]]; then
-            echo "::set-output name=deploy_purchase::true"
+          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_purchase_user"* ]]; then
+            echo "::set-output name=deploy_irentstuff_purchase_user::true"
+            echo "Deploying irentstuff_purchase_user: true"
           else
-            echo "::set-output name=deploy_purchase::false"
+            echo "::set-output name=deploy_irentstuff_purchase_user::false"
+            echo "Deploying irentstuff_purchase_user: false"
           fi
 
-  # Stage 2: Deploy irentstuff-purchase-user if needed
-  deploy_purchase:
-    name: Deploy irentstuff-purchase-user Lambda
+  # Stage 2: Deploy irentstuff_purchase_user if needed
+  deploy_irentstuff_purchase_user:
+    name: Deploy irentstuff_purchase_user Lambda
     runs-on: ubuntu-latest
     needs: orchestrate_lambda_deployments
     if: needs.check_purchase.outputs.deploy_purchase == 'true'
@@ -36,6 +38,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Deploy irentstuff-purchase-user Lambda
-        run: echo "Deploying irentstuff-purchase-user Lambda..."
+      - name: Deploy irentstuff_purchase_user Lambda
+        run: echo "Deploying irentstuff_purchase_user Lambda..."
         # Add your actual deployment steps here
