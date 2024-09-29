@@ -27,11 +27,12 @@ jobs:
       - name: Debug GitHub context (repository)
         run: echo "Repo - ${{ github.repository }}"
 
-      - name: Debug GitHub context (ref)
-        run: echo "Ref - ${{ github.ref }}"
-
       - name: Debug GitHub context
         run: echo "${{ toJson(github) }}"
+
+      - name: Log token presence
+        run: echo "GITHUB_TOKEN is set"
+        if: ${{ secrets.GITHUB_TOKEN != '' }}
 
       # **********[ irentstuff-purchase-user ]*********
       - name: Trigger irentstuff-purchase-user workflow
