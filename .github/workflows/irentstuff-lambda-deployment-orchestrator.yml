@@ -30,16 +30,13 @@ jobs:
       - name: Debug GitHub context
         run: echo "${{ toJson(github) }}"
 
-      - name: Log token presence
-        run: echo "GITHUB_TOKEN is set"
-        if: ${{ secrets.GITHUB_TOKEN != '' }}
-
       # **********[ irentstuff-purchase-user ]*********
       - name: Trigger irentstuff-purchase-user workflow
         if: contains(github.event.head_commit.message, 'irentstuff-purchase-user')
         uses: actions/github-script@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.IRENTSTUFF_TRANSACTIONS_PAT }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: '${{ github.repository_owner }}',
