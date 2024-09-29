@@ -30,23 +30,8 @@ jobs:
       - name: Debug GitHub context (ref)
         run: echo "Ref - ${{ github.ref }}"
 
-      - name: Debug GitHub context (workflow)
-        run: echo "Workflow ${{ github.workflow }}"
-
       - name: Debug GitHub context
         run: echo "${{ toJson(github) }}"
-
-      - name: Log context
-        run: echo "${{ github.context }}"
-      
-      - name: Log repo
-        run: echo "${{ github.context.repo }}"
-
-      - name: Log repo.owner
-        run: echo "${{ github.context.repo.owner }}"
-
-      - name: Log repo.repo
-        run: echo "${{ github.context.repo.repo }}"
 
       # **********[ irentstuff-purchase-user ]*********
       - name: Trigger irentstuff-purchase-user workflow
@@ -55,10 +40,9 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const owner = github.context.repo.owner;
             await github.rest.actions.createWorkflowDispatch({
-              owner: owner,
-              repo: '${{ github.event.repository.name }}',
+              owner: '${{ github.repository_owner }}',
+              repo: '${{ github.repository }}',
               workflow_id: 'irentstuff-purchase-user.yml',
               ref: 'main'
             })
