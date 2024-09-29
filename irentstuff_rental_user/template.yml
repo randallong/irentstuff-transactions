@@ -15,7 +15,7 @@ Resources:
       Description: Gets rentals related to a user. Can pass ?as=renter or ?as=owner
       MemorySize: 128
       Timeout: 3
-      Handler: irentstuff-rental-user.get_user_rentals
+      Handler: irentstuff_rental_user.get_user_rentals
       Runtime: python3.10
       Architectures:
         - x86_64

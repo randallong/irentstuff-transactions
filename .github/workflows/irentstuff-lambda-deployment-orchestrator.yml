@@ -18,6 +18,7 @@ jobs:
       deploy_irentstuff_rental_add: ${{ steps.set_irentstuff_rental_add_output.outputs.deploy_irentstuff_rental_add }}
       deploy_irentstuff_rental_update: ${{ steps.set_irentstuff_rental_update_output.outputs.deploy_irentstuff_rental_update }}
       deploy_irentstuff_rentals_get: ${{ steps.set_irentstuff_rentals_get_output.outputs.deploy_irentstuff_rentals_get }}
+      deploy_irentstuff_rental_user: ${{ steps.set_irentstuff_rental_user_output.outputs.deploy_irentstuff_rental_user }}
       
 
     steps:
@@ -88,6 +89,15 @@ jobs:
             echo "::set-output name=deploy_irentstuff_rentals_get::false"
           fi
 
+      - name: Check commit message for irentstuff_rental_user
+        id: set_irentstuff_rental_user_output
+        run: |
+          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_rental_user"* ]]; then
+            echo "::set-output name=deploy_irentstuff_rental_user::true"
+          else
+            echo "::set-output name=deploy_irentstuff_rental_user::false"
+          fi
+
       - name: Deployment summary
         id: deployment_summary
         run: # Insert echo
@@ -98,6 +108,7 @@ jobs:
           echo "Deploy irentstuff_rental_add - ${{ steps.set_irentstuff_rental_add_output.outputs.deploy_irentstuff_rental_add }}"
           echo "Deploy irentstuff_rental_update - ${{ steps.set_irentstuff_rental_update_output.outputs.deploy_irentstuff_rental_update }}"
           echo "Deploy irentstuff_rentals_get - ${{ steps.set_irentstuff_rentals_get_output.outputs.deploy_irentstuff_rentals_get }}"
+          echo "Deploy irentstuff_rental_user - ${{ steps.set_irentstuff_rental_user_output.outputs.deploy_irentstuff_rental_user }}"
 
   # Insert stage
 
@@ -317,7 +328,7 @@ jobs:
         run: |
           aws lambda update-function-code --function-name irentstuff-rental-update --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_rental_update/irentstuff_rental_update.zip
 
-  # Stage 2f: Deploy irentstuff_rentals_get if triggered
+  # Stage 2h: Deploy irentstuff_rentals_get if triggered
   deploy_irentstuff_rentals_get:
     name: Deploy irentstuff_rentals_get Lambda
     runs-on: ubuntu-latest
@@ -352,3 +363,39 @@ jobs:
       - name: Deploy irentstuff_rentals_get Lambda
         run: |
           aws lambda update-function-code --function-name irentstuff-rentals-get --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_rentals_get/irentstuff_rentals_get.zip
+
+# Stage 2i: Deploy irentstuff_rental_user if triggered
+  deploy_irentstuff_rental_user:
+    name: Deploy irentstuff_rental_user Lambda
+    runs-on: ubuntu-latest
+    needs: orchestrate_lambda_deployments
+    if: needs.orchestrate_lambda_deployments.outputs.deploy_irentstuff_rental_user == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-1
+
+      - name: Install dependencies
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff_rental_user
+          pip install -r requirements.txt
+
+      - name: Package irentstuff_rental_user Lambda
+        run: |
+          cd $GITHUB_WORKSPACE/irentstuff_rental_user
+          zip -r irentstuff_rental_user.zip .
+
+      - name: Deploy irentstuff_rental_user Lambda
+        run: |
+          aws lambda update-function-code --function-name irentstuff-rental-user --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_rental_user/irentstuff_rental_user.zip
