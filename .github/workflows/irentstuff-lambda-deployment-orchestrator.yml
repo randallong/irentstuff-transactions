@@ -28,7 +28,7 @@ jobs:
             echo "deploy_irentstuff_purchase_user: false"
           fi
 
-  # Stage 2: Deploy irentstuff_purchase_user if needed.
+  # Stage 2: Deploy irentstuff_purchase_user if needed
   deploy_irentstuff_purchase_user:
     name: Deploy irentstuff_purchase_user Lambda
     runs-on: ubuntu-latest
@@ -57,8 +57,9 @@ jobs:
 
       - name: Package irentstuff-purchase-user Lambda
         run: |
+          cd $GITHUB_WORKSPACE/irentstuff-purchase-user
           zip -r ../irentstuff-purchase-user.zip .
 
       - name: Deploy irentstuff-purchase-user Lambda
         run: |
-          aws lambda update-function-code --function-name irentstuff-purchase-user --zip-file fileb://./irentstuff-purchase-user.zip
+          aws lambda update-function-code --function-name irentstuff-purchase-user --zip-file fileb://../irentstuff-purchase-user.zip
