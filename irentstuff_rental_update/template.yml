@@ -18,7 +18,7 @@ Resources:
         also be triggered by renter.
       MemorySize: 128
       Timeout: 3
-      Handler: irentstuff-rental-update.update_rental_status
+      Handler: irentstuff_rental_update.update_rental_status
       Runtime: python3.10
       Architectures:
         - x86_64
