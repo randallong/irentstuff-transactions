@@ -1,2 +1,0 @@
-import pytest
-from irentstuff-transactions.irentstuff-rentals-get import response_headers
