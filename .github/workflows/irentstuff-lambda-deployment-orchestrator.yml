@@ -55,7 +55,10 @@ jobs:
           cd $GITHUB_WORKSPACE/irentstuff-purchase-user
           pip install -r requirements.txt
 
-      - name: Package and deploy Lambda
+      - name: Package irentstuff-purchase-user Lambda
         run: |
           zip -r ../irentstuff-purchase-user.zip .
-          aws lambda update-function-code --function-name irentstuff-purchase-user --zip-file fileb://../irentstuff-purchase-user.zip
+
+      - name: Deploy irentstuff-purchase-user Lambda
+        run: |
+          aws lambda update-function-code --function-name irentstuff-purchase-user --zip-file fileb://./irentstuff-purchase-user.zip
