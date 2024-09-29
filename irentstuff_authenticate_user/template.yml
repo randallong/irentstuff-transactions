@@ -15,7 +15,7 @@ Resources:
       Description: ''
       MemorySize: 128
       Timeout: 3
-      Handler: irentstuff-authenticate-user.authenticate_user
+      Handler: irentstuff_authenticate_user.authenticate_user
       Runtime: python3.10
       Architectures:
         - x86_64
