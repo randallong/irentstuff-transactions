@@ -10,7 +10,7 @@ jobs:
   orchestrate_lambda_deployments:
     name: Orchestrate Lambda deployments
     runs-on: ubuntu-latest
-    outputs:  # Insert output
+    outputs:
       deploy_irentstuff_authenticate_user: ${{ steps.set_irentstuff_authenticate_user_output.outputs.deploy_irentstuff_authenticate_user }}
       deploy_irentstuff_purchase_add: ${{ steps.set_irentstuff_purchase_add_output.outputs.deploy_irentstuff_purchase_add }}
       deploy_irentstuff_purchase_update: ${{ steps.set_irentstuff_purchase_update_output.outputs.deploy_irentstuff_purchase_update }}
@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        # Insert check
+
       - name: Check commit message for irentstuff_authenticate_user
         id: set_irentstuff_authenticate_user_output
         run: |
@@ -38,7 +38,9 @@ jobs:
       - name: Check commit message for irentstuff_purchase_add
         id: set_irentstuff_purchase_add_output
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_purchase_add"* ]]; then
+          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_purchase_add"* || \
+              "${{ github.event.head_commit.message }}" == *"deploy all purchase Lambdas"* || \
+              "${{ github.event.head_commit.message }}" == *"deploy all Lambdas"* ]]; then
             echo "::set-output name=deploy_irentstuff_purchase_add::true"
           else
             echo "::set-output name=deploy_irentstuff_purchase_add::false"
@@ -47,7 +49,9 @@ jobs:
       - name: Check commit message for irentstuff_purchase_update
         id: set_irentstuff_purchase_update_output
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_purchase_update"* ]]; then
+          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_purchase_update"* || \
+              "${{ github.event.head_commit.message }}" == *"deploy all purchase Lambdas"* || \
+              "${{ github.event.head_commit.message }}" == *"deploy all Lambdas"* ]]; then
             echo "::set-output name=deploy_irentstuff_purchase_update::true"
           else
             echo "::set-output name=deploy_irentstuff_purchase_update::false"
@@ -56,7 +60,9 @@ jobs:
       - name: Check commit message for irentstuff_purchase_get
         id: set_irentstuff_purchase_get_output
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_purchase_get"* ]]; then
+          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_purchase_get"* || \
+              "${{ github.event.head_commit.message }}" == *"deploy all purchase Lambdas"* || \
+              "${{ github.event.head_commit.message }}" == *"deploy all Lambdas"* ]]; then
             echo "::set-output name=deploy_irentstuff_purchase_get::true"
           else
             echo "::set-output name=deploy_irentstuff_purchase_get::false"
@@ -65,7 +71,9 @@ jobs:
       - name: Check commit message for irentstuff_purchase_user
         id: set_irentstuff_purchase_user_output
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_purchase_user"* ]]; then
+          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_purchase_user"* || \
+              "${{ github.event.head_commit.message }}" == *"deploy all purchase Lambdas"* || \
+              "${{ github.event.head_commit.message }}" == *"deploy all Lambdas"* ]]; then
             echo "::set-output name=deploy_irentstuff_purchase_user::true"
           else
             echo "::set-output name=deploy_irentstuff_purchase_user::false"
@@ -109,7 +117,7 @@ jobs:
 
       - name: Deployment summary
         id: deployment_summary
-        run: # Insert echo
+        run:
           echo "Deploy irentstuff_authenticate_user - ${{ steps.set_irentstuff_authenticate_user_output.outputs.deploy_irentstuff_authenticate_user }}"
           echo "Deploy irentstuff_purchase_add - ${{ steps.set_irentstuff_purchase_add_output.outputs.deploy_irentstuff_purchase_add }}"
           echo "Deploy irentstuff_purchase_update - ${{ steps.set_irentstuff_purchase_update_output.outputs.deploy_irentstuff_purchase_update }}"
@@ -119,8 +127,6 @@ jobs:
           echo "Deploy irentstuff_rental_update - ${{ steps.set_irentstuff_rental_update_output.outputs.deploy_irentstuff_rental_update }}"
           echo "Deploy irentstuff_rentals_get - ${{ steps.set_irentstuff_rentals_get_output.outputs.deploy_irentstuff_rentals_get }}"
           echo "Deploy irentstuff_rental_user - ${{ steps.set_irentstuff_rental_user_output.outputs.deploy_irentstuff_rental_user }}"
-
-  # Insert stage
 
   # Stage 2a: Deploy irentstuff_authenticate_user if triggered
   deploy_irentstuff_authenticate_user:
@@ -410,7 +416,7 @@ jobs:
         run: |
           aws lambda update-function-code --function-name irentstuff-rentals-get --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_rentals_get/irentstuff_rentals_get.zip
 
-# Stage 2i: Deploy irentstuff_rental_user if triggered
+  # Stage 2i: Deploy irentstuff_rental_user if triggered
   deploy_irentstuff_rental_user:
     name: Deploy irentstuff_rental_user Lambda
     runs-on: ubuntu-latest
