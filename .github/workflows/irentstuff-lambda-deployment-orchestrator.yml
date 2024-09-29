@@ -126,7 +126,7 @@ jobs:
 
       - name: Deploy irentstuff_purchase_update Lambda
         run: |
-          aws lambda update-function-code --function-name irentstuff-purchase-add --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_purchase_update/irentstuff_purchase_update.zip
+          aws lambda update-function-code --function-name irentstuff-purchase-update --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_purchase_update/irentstuff_purchase_update.zip
 
   # Stage 2e: Deploy irentstuff_purchase_user if triggered
   deploy_irentstuff_purchase_user:
