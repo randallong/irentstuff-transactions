@@ -17,7 +17,7 @@ jobs:
       deploy_irentstuff_purchase_user: ${{ steps.set_irentstuff_purchase_user_output.outputs.deploy_irentstuff_purchase_user }}
       deploy_irentstuff_rental_add: ${{ steps.set_irentstuff_rental_add_output.outputs.deploy_irentstuff_rental_add }}
       deploy_irentstuff_rental_update: ${{ steps.set_irentstuff_rental_update_output.outputs.deploy_irentstuff_rental_update }}
-      deploy_irentstuff_rental_get: ${{ steps.set_irentstuff_rental_get_output.outputs.deploy_irentstuff_rental_get }}
+      deploy_irentstuff_rentals_get: ${{ steps.set_irentstuff_rentals_get_output.outputs.deploy_irentstuff_rentals_get }}
       
 
     steps:
@@ -79,13 +79,13 @@ jobs:
             echo "::set-output name=deploy_irentstuff_rental_update::false"
           fi
 
-      - name: Check commit message for irentstuff_rental_get
-        id: set_irentstuff_rental_get_output
+      - name: Check commit message for irentstuff_rentals_get
+        id: set_irentstuff_rentals_get_output
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_rental_get"* ]]; then
-            echo "::set-output name=deploy_irentstuff_rental_get::true"
+          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_rentals_get"* ]]; then
+            echo "::set-output name=deploy_irentstuff_rentals_get::true"
           else
-            echo "::set-output name=deploy_irentstuff_rental_get::false"
+            echo "::set-output name=deploy_irentstuff_rentals_get::false"
           fi
 
       - name: Deployment summary
@@ -97,7 +97,7 @@ jobs:
           echo "Deploy irentstuff_purchase_user - ${{ steps.set_irentstuff_purchase_user_output.outputs.deploy_irentstuff_purchase_user }}"
           echo "Deploy irentstuff_rental_add - ${{ steps.set_irentstuff_rental_add_output.outputs.deploy_irentstuff_rental_add }}"
           echo "Deploy irentstuff_rental_update - ${{ steps.set_irentstuff_rental_update_output.outputs.deploy_irentstuff_rental_update }}"
-          echo "Deploy irentstuff_rental_get - ${{ steps.set_irentstuff_rental_get_output.outputs.deploy_irentstuff_rental_get }}"
+          echo "Deploy irentstuff_rentals_get - ${{ steps.set_irentstuff_rentals_get_output.outputs.deploy_irentstuff_rentals_get }}"
 
   # Insert stage
 
@@ -317,12 +317,12 @@ jobs:
         run: |
           aws lambda update-function-code --function-name irentstuff-rental-update --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_rental_update/irentstuff_rental_update.zip
 
-  # Stage 2f: Deploy irentstuff_rental_get if triggered
-  deploy_irentstuff_rental_get:
-    name: Deploy irentstuff_rental_get Lambda
+  # Stage 2f: Deploy irentstuff_rentals_get if triggered
+  deploy_irentstuff_rentals_get:
+    name: Deploy irentstuff_rentals_get Lambda
     runs-on: ubuntu-latest
     needs: orchestrate_lambda_deployments
-    if: needs.orchestrate_lambda_deployments.outputs.deploy_irentstuff_rental_get == 'true'
+    if: needs.orchestrate_lambda_deployments.outputs.deploy_irentstuff_rentals_get == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -341,14 +341,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd $GITHUB_WORKSPACE/irentstuff_rental_get
+          cd $GITHUB_WORKSPACE/irentstuff_rentals_get
           pip install -r requirements.txt
 
-      - name: Package irentstuff_rental_get Lambda
+      - name: Package irentstuff_rentals_get Lambda
         run: |
-          cd $GITHUB_WORKSPACE/irentstuff_rental_get
-          zip -r irentstuff_rental_get.zip .
+          cd $GITHUB_WORKSPACE/irentstuff_rentals_get
+          zip -r irentstuff_rentals_get.zip .
 
-      - name: Deploy irentstuff_rental_get Lambda
+      - name: Deploy irentstuff_rentals_get Lambda
         run: |
-          aws lambda update-function-code --function-name irentstuff-rental-get --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_rental_get/irentstuff_rental_get.zip
+          aws lambda update-function-code --function-name irentstuff-rentals-get --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_rentals_get/irentstuff_rentals_get.zip
