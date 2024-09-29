@@ -21,11 +21,17 @@ jobs:
       - name: Debug GitHub context
         run: echo "${{ toJson(github) }}"
 
-      - name: Log owner and repo
-        run: echo "${{ github.context.repo.owner }}", ${{ github.context.repo.repo }}"
+      - name: Log context
+        run: echo "${{ github.context }}"
+      
+      - name: Log repo
+        run: echo "${{ github.context.repo }}"
 
-      - name: Log owner and repo
-        run: echo "${{ github.context.repository }}", ${{ github.context.repository_owner }}"
+      - name: Log repo.owner
+        run: echo "${{ github.context.repo.owner }}"
+
+      - name: Log repo.repo
+        run: echo "${{ github.context.repo.repo }}"
 
       # **********[ irentstuff-purchase-user ]*********
       - name: Trigger irentstuff-purchase-user workflow
