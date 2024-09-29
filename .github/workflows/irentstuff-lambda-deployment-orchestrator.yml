@@ -40,4 +40,4 @@ jobs:
 
       - name: Deploy irentstuff_purchase_user Lambda
         run: echo "Deploying irentstuff_purchase_user Lambda..."
-        # Add your actual deployment steps here
+        # Add your deployment steps here
