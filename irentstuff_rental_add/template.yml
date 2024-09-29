@@ -15,7 +15,7 @@ Resources:
       Description: Creates a rental offer, which starts the rental process. Used by renter.
       MemorySize: 128
       Timeout: 3
-      Handler: irentstuff-rental-add.add_rental
+      Handler: irentstuff_rental_add.add_rental
       Runtime: python3.10
       Architectures:
         - x86_64
