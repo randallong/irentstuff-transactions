@@ -1,9 +1,5 @@
 """Confirm a Purchase in the Purchases db. Triggered by Owner"""
 
-"""
-TODO
-1. Add API call to change item status in items db to "pending_purchase"
-"""
 from datetime import (datetime, date)
 from decimal import Decimal
 
@@ -55,7 +51,7 @@ def connect_to_db():
     transactions_db_password = os.environ["DB1_PASSWORD"]
     transactions_db_rds_proxy_host = os.environ["DB1_RDS_PROXY_HOST"]
     transactions_db_name = os.environ["DB1_NAME"]
-    
+
     try:
         transactions_conn = pymysql.connect(
             host=transactions_db_rds_proxy_host,
@@ -69,8 +65,8 @@ def connect_to_db():
         log.error(e)
         sys.exit(1)
     return transactions_conn
-    
-    
+
+
 def response_headers(content_type: str):
     headers = {
         "Access-Control-Allow-Origin": "*",
@@ -86,7 +82,7 @@ def retrieve_updated_purchase(cursor, item_id, purchase_id):
     cursor.execute(retrieve_query, (item_id, purchase_id))
     purchase = cursor.fetchone()
     log.info(purchase)
-    
+
     if purchase:
         response = {
             "purchase_id": purchase["purchase_id"],
@@ -102,8 +98,8 @@ def retrieve_updated_purchase(cursor, item_id, purchase_id):
         return response
     else:
         return {"error": "Purchase not found"}
-        
-        
+
+
 def update_db(cursor, new_status, purchase_id, item_id, transactions_conn):
     # Update the purchase status in the DB. If item is sold, automatically logs purchase date as today
     if new_status == "sold":
@@ -112,35 +108,35 @@ def update_db(cursor, new_status, purchase_id, item_id, transactions_conn):
         update_query = "UPDATE Purchases SET status = %s WHERE purchase_id = %s AND item_id = %s"
     cursor.execute(update_query, (new_status, purchase_id, item_id))
     transactions_conn.commit()
-        
+
     response = retrieve_updated_purchase(cursor, item_id, purchase_id)
-        
+
     return {
         "statusCode": 200,
         "headers": response_headers('application/json'),
         "body": json.dumps(response)
     }
-    
-    
+
+
 def update_availability_in_items_db(token, item_id, availability):
     """Updates item availability in the item DB via API using a PATCH request"""
-    
+
     api_url = f"https://pxgwc7gdz1.execute-api.ap-southeast-1.amazonaws.com/dev/items/{item_id}"
-    
+
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
     }
-    
+
     # JSON body for the PATCH request
     payload = {
         "availability": availability
     }
-    
+
     try:
         # Make the PATCH request
         response = requests.patch(api_url, headers=headers, json=payload)
-        
+
         if response.status_code == 200:
             log.info(f"Availability for item {item_id} successfully updated to {availability}")
             return response.json()
@@ -149,7 +145,7 @@ def update_availability_in_items_db(token, item_id, availability):
                 "status_code": response.status_code,
                 "body": response.text
             }
-    
+
     except requests.exceptions.RequestException as e:
         return {
             "status_code": 500,
@@ -160,27 +156,27 @@ def update_availability_in_items_db(token, item_id, availability):
 def update_purchase_status(event, context):
     transactions_conn = connect_to_db()
     log.info(event)
-    
+
     item_id = event.get('pathParameters', {}).get('item_id')
     purchase_id = event.get('pathParameters', {}).get('purchase_id')
     action = event.get("pathParameters", {}).get("action")  # Accepted actions: "confirm", "cancel", "complete"
     log.info(f"item_id: {item_id}, purchase_id: {purchase_id}, action: {action}")
-    
+
     token = event["headers"]["Authorization"]
     clean_token = token.replace("Bearer ", "").strip()
-    
+
     auth = invoke_auth_lambda(clean_token)
     log.info(f"{auth=}")
     auth_result = auth['message']
     requestor = auth['username']
     log.info(f"{auth_result=}")
     log.info(f"{requestor=}")
-    
+
     if auth_result != "Token is valid":
         log.error("User token is invalid")
         return {"statusCode": 401,
-            "headers": response_headers('text/plain'),
-            "body": "Your user token is invalid."}
+                "headers": response_headers('text/plain'),
+                "body": "Your user token is invalid."}
     else:
         try:
             with transactions_conn.cursor(pymysql.cursors.DictCursor) as cursor:
@@ -189,57 +185,57 @@ def update_purchase_status(event, context):
                 select_query = "SELECT * FROM Purchases WHERE purchase_id = %s AND item_id = %s"
                 cursor.execute(select_query, (purchase_id, item_id))
                 purchase = cursor.fetchone()
-                
+
                 if purchase:
                     log.info(f"{purchase=}")
                     item_owner = purchase["owner_id"]
                     item_buyer = purchase["buyer_id"]
                     current_status = purchase["status"]
-                    
+
                     # Confirm purchase
                     if action == "confirm" and current_status == "offered":
                         if requestor == item_owner:
                             new_status = "confirmed"
                             log.info(f"Request passed all authentication checks. Item will be {new_status}")
                             db_update = update_db(cursor, new_status, purchase_id, item_id, transactions_conn)
-                            
+
                             # Update availability in items DB
-                            update_availability_in_items_db(clean_token, item_id, availability = "pending_purchase")
+                            update_availability_in_items_db(clean_token, item_id, availability="pending_purchase")
                         else:
                             log.error("Requestor is not item owner")
                             db_update = {"statusCode": 401,
-                                "headers": response_headers('text/plain'),
-                                "body": "Only the item owner can confirm the purchase request."}
-                    
+                                         "headers": response_headers('text/plain'),
+                                         "body": "Only the item owner can confirm the purchase request."}
+
                     # Cancel purchase
                     elif action == "cancel" and current_status in ("offered", "confirmed"):
                         if requestor in (item_owner, item_buyer):
                             new_status = "cancelled"
                             log.info(f"Request passed all authentication checks. Item will be {new_status}")
                             db_update = update_db(cursor, new_status, purchase_id, item_id, transactions_conn)
-                            
+
                             # Update availability in items DB
-                            update_availability_in_items_db(clean_token, item_id, availability = "available")
+                            update_availability_in_items_db(clean_token, item_id, availability="available")
                         else:
                             log.error("Requestor is not item owner or buyer")
                             db_update = {"statusCode": 401,
-                                "headers": response_headers('text/plain'),
-                                "body": "Only the item owner or buyer can cancel the purchase request."}
-                    
+                                         "headers": response_headers('text/plain'),
+                                         "body": "Only the item owner or buyer can cancel the purchase request."}
+
                     # Complete purchase
                     elif action == "complete" and current_status == "confirmed":
                         if requestor == item_owner:
                             new_status = "sold"
                             log.info(f"Request passed all authentication checks. Item will be {new_status}")
                             db_update = update_db(cursor, new_status, purchase_id, item_id, transactions_conn)
-                            
+
                             # Update availability in items DB
-                            update_availability_in_items_db(clean_token, item_id, availability = "available")
-                        else: 
+                            update_availability_in_items_db(clean_token, item_id, availability="available")
+                        else:
                             log.error("Requestor is not item owner")
                             db_update = {"statusCode": 401,
-                                "headers": response_headers('text/plain'),
-                                "body": "Only the item owner can complete the purchase request."}
+                                         "headers": response_headers('text/plain'),
+                                         "body": "Only the item owner can complete the purchase request."}
                     else:
                         db_update = {
                             "statusCode": 400,

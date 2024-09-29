@@ -18,7 +18,7 @@ Resources:
         be triggered by renter.
       MemorySize: 128
       Timeout: 3
-      Handler: irentstuff-purchase-update.update_purchase_status
+      Handler: irentstuff_purchase_update.update_purchase_status
       Runtime: python3.10
       Architectures:
         - x86_64
