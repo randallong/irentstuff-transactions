@@ -28,7 +28,7 @@ jobs:
             echo "deploy_irentstuff_purchase_user: false"
           fi
 
-  # Stage 2: Deploy irentstuff_purchase_user if needed
+  # Stage 2: Deploy irentstuff_purchase_user if needed.
   deploy_irentstuff_purchase_user:
     name: Deploy irentstuff_purchase_user Lambda
     runs-on: ubuntu-latest
