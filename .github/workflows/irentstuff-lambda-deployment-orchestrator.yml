@@ -35,7 +35,6 @@ jobs:
         if: contains(github.event.head_commit.message, 'irentstuff-purchase-user')
         uses: actions/github-script@v4
         with:
-          # github-token: ${{ secrets.GITHUB_TOKEN }}
           github-token: ${{ secrets.IRENTSTUFF_TRANSACTIONS_PAT }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
