@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+.env
+.DS_Store  # Mac OS
+.idea/      # JetBrains IDEs
+.vscode/    # VS Code
