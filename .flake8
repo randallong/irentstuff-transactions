@@ -1,6 +1,5 @@
-[run]
-
-omit =
+[flake8]
+exclude = 
     */certifi/*
     */certifi-2024.8.30.dist-info/*
     */cffi/*
@@ -30,10 +29,3 @@ omit =
     */six-1.16.0.dist-info/*
     */urllib3/*
     */urllib3-2.2.2.dist-info/*
-    */irentstuff_rentals_get/test_*
-    *six.py*
-
-[report]
-exclude_lines = 
-    os.environ*
-    log.*
