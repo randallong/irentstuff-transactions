@@ -222,7 +222,7 @@ jobs:
       - name: Package irentstuff_authenticate_user Lambda
         run: |
           cd $GITHUB_WORKSPACE/irentstuff_authenticate_user
-          zip -r irentstuff_authenticate_user.zip .
+          zip -r irentstuff_authenticate_user.zip . -x "test_irentstuff_authenticate_user.py"
 
       - name: Deploy irentstuff_authenticate_user Lambda
         run: |
@@ -258,7 +258,7 @@ jobs:
       - name: Package irentstuff_purchase_add Lambda
         run: |
           cd $GITHUB_WORKSPACE/irentstuff_purchase_add
-          zip -r irentstuff_purchase_add.zip .
+          zip -r irentstuff_purchase_add.zip . -x "test_irentstuff_purchase_add.py"
 
       - name: Deploy irentstuff_purchase_add Lambda
         run: |
@@ -294,7 +294,7 @@ jobs:
       - name: Package irentstuff_purchase_update Lambda
         run: |
           cd $GITHUB_WORKSPACE/irentstuff_purchase_update
-          zip -r irentstuff_purchase_update.zip .
+          zip -r irentstuff_purchase_update.zip . -x "test_irentstuff_purchase_update.py"
 
       - name: Deploy irentstuff_purchase_update Lambda
         run: |
@@ -330,7 +330,7 @@ jobs:
       - name: Package irentstuff_purchase_get Lambda
         run: |
           cd $GITHUB_WORKSPACE/irentstuff_purchase_get
-          zip -r irentstuff_purchase_get.zip .
+          zip -r irentstuff_purchase_get.zip . -x "test_irentstuff_purchase_get.py"
 
       - name: Deploy irentstuff_purchase_get Lambda
         run: |
@@ -366,7 +366,7 @@ jobs:
       - name: Package irentstuff_purchase_user Lambda
         run: |
           cd $GITHUB_WORKSPACE/irentstuff_purchase_user
-          zip -r irentstuff_purchase_user.zip .
+          zip -r irentstuff_purchase_user.zip . -x "test_irentstuff_purchase_user.py"
 
       - name: Deploy irentstuff_purchase_user Lambda
         run: |
@@ -402,7 +402,7 @@ jobs:
       - name: Package irentstuff_rental_add Lambda
         run: |
           cd $GITHUB_WORKSPACE/irentstuff_rental_add
-          zip -r irentstuff_rental_add.zip .
+          zip -r irentstuff_rental_add.zip . -x "test_irentstuff_rental_add.py"
 
       - name: Deploy irentstuff_rental_add Lambda
         run: |
@@ -438,7 +438,7 @@ jobs:
       - name: Package irentstuff_rental_update Lambda
         run: |
           cd $GITHUB_WORKSPACE/irentstuff_rental_update
-          zip -r irentstuff_rental_update.zip .
+          zip -r irentstuff_rental_update.zip . -x "test_irentstuff_rental_update.py"
 
       - name: Deploy irentstuff_rental_update Lambda
         run: |
@@ -510,7 +510,7 @@ jobs:
       - name: Package irentstuff_rental_user Lambda
         run: |
           cd $GITHUB_WORKSPACE/irentstuff_rental_user
-          zip -r irentstuff_rental_user.zip .
+          zip -r irentstuff_rental_user.zip . -x "test_irentstuff_rental_user.py"
 
       - name: Deploy irentstuff_rental_user Lambda
         run: |
