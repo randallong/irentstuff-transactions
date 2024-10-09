@@ -23,9 +23,13 @@ def get_cognito_jwks():
 def authenticate_user(event, context):
 
     # Get the JWT token from the query parameters
-    token = event["headers"]["Authorization"]
+    try:
+        token = event["headers"]["Authorization"]
+    except Exception as e:
+        log.info(f"Token not found: {e}")
+        token = None
 
-    if not token:
+    if token is None:
         return {
             'statusCode': 403,
             'body': json.dumps('Token is missing')

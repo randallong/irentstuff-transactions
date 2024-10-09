@@ -13,6 +13,7 @@ log.setLevel(logging.INFO)
 
 def connect_to_db():
     "Connect to Transactions DB"
+    transactions_conn = None
     transactions_db_user_name = os.environ["DB1_USER_NAME"]
     transactions_db_password = os.environ["DB1_PASSWORD"]
     transactions_db_rds_proxy_host = os.environ["DB1_RDS_PROXY_HOST"]
@@ -91,7 +92,7 @@ def get_user_purchases(event, context):
         return {
             "statusCode": 500,
             "headers": response_header('text/plain'),
-            "body": f"An error occurred while retrieving the rentals: {str(e)}"
+            "body": f"An error occurred while retrieving the purchases: {str(e)}"
         }
     finally:
         transactions_conn.close()
