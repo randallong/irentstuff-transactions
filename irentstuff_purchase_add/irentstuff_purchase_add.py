@@ -59,6 +59,7 @@ def invoke_auth_lambda(jwt_token):
 
 def connect_to_db():
     "Connect to Transactions DB"
+    transactions_conn = None
     transactions_db_user_name = os.environ["DB1_USER_NAME"]
     transactions_db_password = os.environ["DB1_PASSWORD"]
     transactions_db_rds_proxy_host = os.environ["DB1_RDS_PROXY_HOST"]
@@ -237,7 +238,7 @@ def add_purchase(event, context):
     auth_result = auth['message']
     requestor = auth['username']
 
-    item_details = get_item(item_id) # Use the get_item() method to make an API call to the items DB to retrieve item info.
+    item_details = get_item(item_id)  # Use the get_item() method to make an API call to the items DB to retrieve item info.
     item_availability = item_details['availability']
     item_owner = item_details['owner']
     log.info(f"Purchase requestor: {requestor}, Item owner: {item_owner}. Renting from self: {requestor==item_owner}")
@@ -274,7 +275,8 @@ def add_purchase(event, context):
 
                 rentals = check_item_rental_status(transactions_conn, item_id)
                 log.info(rentals)
-                if rentals["status_code"] != 200:
+
+                if rentals["statusCode"] != 200:
                     return {
                         "statusCode": rentals["status_code"],
                         "headers": response_headers('application/json'),
