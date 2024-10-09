@@ -6,6 +6,7 @@ import json
 import logging
 import pymysql
 import os
+import requests
 import sys
 from pymysql.cursors import DictCursor
 from datetime import datetime, date
@@ -16,12 +17,11 @@ log.setLevel(logging.INFO)
 
 def connect_to_db():
     "Connect to Transactions DB"
-    transactions_conn = None
     transactions_db_user_name = os.environ["DB1_USER_NAME"]
     transactions_db_password = os.environ["DB1_PASSWORD"]
     transactions_db_rds_proxy_host = os.environ["DB1_RDS_PROXY_HOST"]
     transactions_db_name = os.environ["DB1_NAME"]
-
+    
     try:
         transactions_conn = pymysql.connect(
             host=transactions_db_rds_proxy_host,
@@ -37,8 +37,8 @@ def connect_to_db():
         log.error(e)
         sys.exit(1)
     return transactions_conn
-
-
+    
+    
 def response_headers(content_type: str):
     headers = {
         'Access-Control-Allow-Origin': '*',
@@ -47,14 +47,14 @@ def response_headers(content_type: str):
         'Content-Type': content_type
     }
     return headers
-
-
+    
+    
 def retrieve_updated_rental(cursor, item_id, rental_id):
     retrieve_query = "SELECT * FROM Rentals WHERE item_id = %s AND rental_id = %s"
     cursor.execute(retrieve_query, (item_id, rental_id))
     rental = cursor.fetchone()
     log.info(rental)
-
+    
     if rental:
         response = {
             "rental_id": rental["rental_id"],
@@ -76,7 +76,7 @@ def retrieve_updated_rental(cursor, item_id, rental_id):
 
 def get_rentals(event, context):
     log.info(event)
-    transactions_conn = None
+    transactions_conn = connect_to_db()
 
     path_params = event.get('pathParameters', {})
     item_id = path_params.get('item_id')
@@ -89,8 +89,6 @@ def get_rentals(event, context):
     log.info(f"item_id: {item_id}, rental_id: {rental_id}, query_type: {query_type}")
 
     try:
-        transactions_conn = connect_to_db()
-        print("Ideal path entered")
         with transactions_conn.cursor(pymysql.cursors.DictCursor) as cursor:
             if rental_id:
                 # Fetch the specific rental by rental_id and item_id
@@ -108,28 +106,26 @@ def get_rentals(event, context):
                 # Fetch all rentals for the given item_id
                 select_query = "SELECT * FROM Rentals WHERE item_id = %s"
                 cursor.execute(select_query, (item_id,))
-
+            
             rentals = cursor.fetchall()
             log.info(rentals)
-
+            
             # Format the response
             if rentals:
                 response = [retrieve_updated_rental(cursor, rental["item_id"], rental["rental_id"]) for rental in rentals]
             else:
                 response = {"message": "No rentals found"}
-
+            
             return {
                 "statusCode": 200,
                 "headers": response_headers('application/json'),
                 "body": json.dumps(response)
             }
-    except Exception as e:
-        print("Error path entered")
+    except pymysql.MySQLError as e:
         return {
             "statusCode": 500,
             "headers": response_headers('text/plain'),
             "body": f"An error occurred while retrieving the rentals: {str(e)}"
         }
     finally:
-        if transactions_conn:
-            transactions_conn.close()
+        transactions_conn.close()

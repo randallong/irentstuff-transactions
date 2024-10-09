@@ -47,7 +47,6 @@ def invoke_auth_lambda(jwt_token):
 
 def connect_to_db():
     "Connect to Transactions DB"
-    transactions_conn = None
     transactions_db_user_name = os.environ["DB1_USER_NAME"]
     transactions_db_password = os.environ["DB1_PASSWORD"]
     transactions_db_rds_proxy_host = os.environ["DB1_RDS_PROXY_HOST"]
