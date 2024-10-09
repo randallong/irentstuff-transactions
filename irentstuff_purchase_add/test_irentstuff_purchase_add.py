@@ -324,7 +324,7 @@ class TestAddPurchaseFunctions(TestCase):
         context = {}
 
         mock_create_purchase_entry.return_value = {
-            "statusCode": 200,
+            "status_code": 200,
             "body": json.dumps({"purchase_id": 1})
         }
 

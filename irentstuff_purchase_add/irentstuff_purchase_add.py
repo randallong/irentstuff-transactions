@@ -276,7 +276,7 @@ def add_purchase(event, context):
                 rentals = check_item_rental_status(transactions_conn, item_id)
                 log.info(rentals)
 
-                if rentals["statusCode"] != 200:
+                if rentals["status_code"] != 200:
                     return {
                         "statusCode": rentals["status_code"],
                         "headers": response_headers('application/json'),
