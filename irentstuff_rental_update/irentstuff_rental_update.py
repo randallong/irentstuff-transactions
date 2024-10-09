@@ -26,7 +26,7 @@ import requests
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 
-lambda_client = boto3.client('lambda')
+lambda_client = boto3.client('lambda', region_name="ap-southeast-1")
 
 
 def invoke_auth_lambda(jwt_token):
