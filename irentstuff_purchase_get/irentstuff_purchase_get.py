@@ -7,6 +7,7 @@ import logging
 import pymysql
 import os
 import sys
+
 from pymysql.cursors import DictCursor
 from datetime import datetime, date
 
@@ -16,6 +17,7 @@ log.setLevel(logging.INFO)
 
 def connect_to_db():
     "Connect to Transactions DB"
+    transactions_conn = None
     transactions_db_user_name = os.environ["DB1_USER_NAME"]
     transactions_db_password = os.environ["DB1_PASSWORD"]
     transactions_db_rds_proxy_host = os.environ["DB1_RDS_PROXY_HOST"]
@@ -67,6 +69,15 @@ def get_purchase(event, context):
     purchase_id = event.get('pathParameters', {}).get('purchase_id')
     log.info(f"item_id: {item_id}, purchase_id: {purchase_id}")
 
+    if not item_id or not purchase_id:
+        return {
+            "statusCode": 400,
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "body": json.dumps({"error": "Missing item_id or purchase_id"})
+        }
+
     try:
         with transactions_conn.cursor(pymysql.cursors.DictCursor) as cursor:
             response = retrieve_updated_purchase(cursor, item_id, purchase_id)
@@ -91,4 +102,5 @@ def get_purchase(event, context):
             "body": f"An error occurred while retrieving the purchase status: {str(e)}"
         }
     finally:
-        transactions_conn.close()
+        if transactions_conn:
+            transactions_conn.close()
