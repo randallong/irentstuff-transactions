@@ -115,6 +115,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Extract commit message
+        id: extract_commit_message
+        run: echo "COMMIT_MESSAGE=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
+
       - name: Check commit message for irentstuff_authenticate_user
         id: set_irentstuff_authenticate_user_output
         run: |
@@ -204,9 +208,9 @@ jobs:
       - name: Check commit message for irentstuff_rental_user
         id: set_irentstuff_rental_user_output
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_rental_user"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all rental Lambdas"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all Lambdas"* ]]; then
+          if [[ "$COMMIT_MESSAGE" == *"deploy irentstuff_rental_user"* || \
+                "$COMMIT_MESSAGE" == *"deploy all rental Lambdas"* || \
+                "$COMMIT_MESSAGE" == *"deploy all Lambdas"* ]]; then
             echo "::set-output name=deploy_irentstuff_rental_user::true"
           else
             echo "::set-output name=deploy_irentstuff_rental_user::false"
