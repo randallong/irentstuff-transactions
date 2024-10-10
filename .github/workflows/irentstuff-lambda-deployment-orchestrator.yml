@@ -67,6 +67,7 @@ jobs:
   # Stage 3: SAST with Semgrep
   semgrep_analysis:
     runs-on: ubuntu-latest
+    needs: unit_tests
 
     steps:
     - name: Checkout code
@@ -98,7 +99,7 @@ jobs:
   orchestrate_lambda_deployments:
     name: Orchestrate Lambda deployments
     runs-on: ubuntu-latest
-    needs: unit_tests
+    needs: semgrep_analysis
     outputs:
       deploy_irentstuff_authenticate_user: ${{ steps.set_irentstuff_authenticate_user_output.outputs.deploy_irentstuff_authenticate_user }}
       deploy_irentstuff_purchase_add: ${{ steps.set_irentstuff_purchase_add_output.outputs.deploy_irentstuff_purchase_add }}
