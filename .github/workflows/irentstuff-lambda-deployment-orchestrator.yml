@@ -117,7 +117,9 @@ jobs:
 
       - name: Extract commit message
         id: extract_commit_message
-        run: echo "COMMIT_MESSAGE=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
+        run: |
+          SANITIZED_COMMIT_MESSAGE=$(echo "${{ github.event.head_commit.message }}" | sed ':a;N;$!ba;s/\n/ /g' | sed 's/"/\\"/g')
+          echo "COMMIT_MESSAGE=$SANITIZED_COMMIT_MESSAGE" >> $GITHUB_ENV
 
       - name: Check commit message for irentstuff_authenticate_user
         id: set_irentstuff_authenticate_user_output
