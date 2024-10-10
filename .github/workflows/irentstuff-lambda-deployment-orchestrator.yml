@@ -207,7 +207,7 @@ jobs:
             echo "::set-output name=deploy_irentstuff_rentals_get::false"
           fi
 
-      - name: Check commit message for irentstuff_rental_user
+      - name: Check the commit message for irentstuff_rental_user
         id: set_irentstuff_rental_user_output
         run: |
           if [[ "$COMMIT_MESSAGE" == *"deploy irentstuff_rental_user"* || \
