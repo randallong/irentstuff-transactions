@@ -86,7 +86,7 @@ jobs:
 
     - name: Run Semgrep analysis
       run: |
-        semgrep --config p/ci --error --json > semgrep-report.json  # Run Semgrep with default CI rules
+        semgrep --config p/ci --error --verbose --json > semgrep-report.json  # Run Semgrep with default CI rules
       continue-on-error: true
 
     - name: Upload Semgrep report
