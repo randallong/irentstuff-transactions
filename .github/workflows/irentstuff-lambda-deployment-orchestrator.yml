@@ -67,6 +67,7 @@ jobs:
   # Stage 3: SAST with Semgrep
   semgrep_analysis:
     runs-on: ubuntu-latest
+    needs: unit_tests
 
     steps:
     - name: Checkout code
@@ -98,7 +99,7 @@ jobs:
   orchestrate_lambda_deployments:
     name: Orchestrate Lambda deployments
     runs-on: ubuntu-latest
-    needs: unit_tests
+    needs: semgrep_analysis
     outputs:
       deploy_irentstuff_authenticate_user: ${{ steps.set_irentstuff_authenticate_user_output.outputs.deploy_irentstuff_authenticate_user }}
       deploy_irentstuff_purchase_add: ${{ steps.set_irentstuff_purchase_add_output.outputs.deploy_irentstuff_purchase_add }}
@@ -124,7 +125,8 @@ jobs:
       - name: Check commit message for irentstuff_authenticate_user
         id: set_irentstuff_authenticate_user_output
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_authenticate_user"* ]]; then
+          if [[ "$COMMIT_MESSAGE" == *"deploy irentstuff_authenticate_user"*|| \
+                "$COMMIT_MESSAGE" == *"deploy all Lambdas"* ]]; then
             echo "::set-output name=deploy_irentstuff_authenticate_user::true"
           else
             echo "::set-output name=deploy_irentstuff_authenticate_user::false"
@@ -133,9 +135,9 @@ jobs:
       - name: Check commit message for irentstuff_purchase_add
         id: set_irentstuff_purchase_add_output
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_purchase_add"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all purchase Lambdas"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all Lambdas"* ]]; then
+          if [[ "$COMMIT_MESSAGE" == *"deploy irentstuff_purchase_add"* || \
+                "$COMMIT_MESSAGE" == *"deploy all purchase Lambdas"* || \
+                "$COMMIT_MESSAGE" == *"deploy all Lambdas"* ]]; then
             echo "::set-output name=deploy_irentstuff_purchase_add::true"
           else
             echo "::set-output name=deploy_irentstuff_purchase_add::false"
@@ -144,9 +146,9 @@ jobs:
       - name: Check commit message for irentstuff_purchase_update
         id: set_irentstuff_purchase_update_output
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_purchase_update"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all purchase Lambdas"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all Lambdas"* ]]; then
+          if [[ "$COMMIT_MESSAGE" == *"deploy irentstuff_purchase_update"* || \
+                "$COMMIT_MESSAGE" == *"deploy all purchase Lambdas"* || \
+                "$COMMIT_MESSAGE" == *"deploy all Lambdas"* ]]; then
             echo "::set-output name=deploy_irentstuff_purchase_update::true"
           else
             echo "::set-output name=deploy_irentstuff_purchase_update::false"
@@ -155,9 +157,9 @@ jobs:
       - name: Check commit message for irentstuff_purchase_get
         id: set_irentstuff_purchase_get_output
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_purchase_get"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all purchase Lambdas"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all Lambdas"* ]]; then
+          if [[ "$COMMIT_MESSAGE" == *"deploy irentstuff_purchase_get"* || \
+                "$COMMIT_MESSAGE" == *"deploy all purchase Lambdas"* || \
+                "$COMMIT_MESSAGE" == *"deploy all Lambdas"* ]]; then
             echo "::set-output name=deploy_irentstuff_purchase_get::true"
           else
             echo "::set-output name=deploy_irentstuff_purchase_get::false"
@@ -166,9 +168,9 @@ jobs:
       - name: Check commit message for irentstuff_purchase_user
         id: set_irentstuff_purchase_user_output
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_purchase_user"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all purchase Lambdas"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all Lambdas"* ]]; then
+          if [[ "$COMMIT_MESSAGE" == *"deploy irentstuff_purchase_user"* || \
+                "$COMMIT_MESSAGE" == *"deploy all purchase Lambdas"* || \
+                "$COMMIT_MESSAGE" == *"deploy all Lambdas"* ]]; then
             echo "::set-output name=deploy_irentstuff_purchase_user::true"
           else
             echo "::set-output name=deploy_irentstuff_purchase_user::false"
@@ -177,9 +179,9 @@ jobs:
       - name: Check commit message for irentstuff_rental_add
         id: set_irentstuff_rental_add_output
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_rental_add"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all rental Lambdas"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all Lambdas"* ]]; then
+          if [[ "$COMMIT_MESSAGE" == *"deploy irentstuff_rental_add"* || \
+                "$COMMIT_MESSAGE" == *"deploy all rental Lambdas"* || \
+                "$COMMIT_MESSAGE" == *"deploy all Lambdas"* ]]; then
             echo "::set-output name=deploy_irentstuff_rental_add::true"
           else
             echo "::set-output name=deploy_irentstuff_rental_add::false"
@@ -188,9 +190,9 @@ jobs:
       - name: Check commit message for irentstuff_rental_update
         id: set_irentstuff_rental_update_output
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_rental_update"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all rental Lambdas"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all Lambdas"* ]]; then
+          if [[ "$COMMIT_MESSAGE" == *"deploy irentstuff_rental_update"* || \
+                "$COMMIT_MESSAGE" == *"deploy all rental Lambdas"* || \
+                "$COMMIT_MESSAGE" == *"deploy all Lambdas"* ]]; then
             echo "::set-output name=deploy_irentstuff_rental_update::true"
           else
             echo "::set-output name=deploy_irentstuff_rental_update::false"
@@ -199,9 +201,9 @@ jobs:
       - name: Check commit message for irentstuff_rentals_get
         id: set_irentstuff_rentals_get_output
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"deploy irentstuff_rentals_get"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all rental Lambdas"* || \
-              "${{ github.event.head_commit.message }}" == *"deploy all Lambdas"* ]]; then
+          if [[ "$COMMIT_MESSAGE" == *"deploy irentstuff_rentals_get"* || \
+                "$COMMIT_MESSAGE" == *"deploy all rental Lambdas"* || \
+                "$COMMIT_MESSAGE" == *"deploy all Lambdas"* ]]; then
             echo "::set-output name=deploy_irentstuff_rentals_get::true"
           else
             echo "::set-output name=deploy_irentstuff_rentals_get::false"
