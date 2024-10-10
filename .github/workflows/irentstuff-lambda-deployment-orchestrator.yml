@@ -64,7 +64,34 @@ jobs:
           name: coverage-report
           path: coverage_report/
   
-  # Stage 3: Check if Lambdas need to be deployed
+  # Stage 3: SAST with Semgrep
+  semgrep_analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4 
+
+    - name: Set up Python 3.12.6
+      uses: actions/setup-python@v5  
+      with:
+        python-version: '3.12.6'
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install semgrep  # Install Semgrep
+    - name: Run Semgrep analysis
+      run: |
+        semgrep --config p/ci --error --json > semgrep-report.json  # Run Semgrep with default CI rules
+    - name: Upload Semgrep report
+      uses: actions/upload-artifact@v4  
+      with:
+        name: semgrep-report
+        path: semgrep-report.json
+
+  # Stage 4: Check if Lambdas need to be deployed
   orchestrate_lambda_deployments:
     name: Orchestrate Lambda deployments
     runs-on: ubuntu-latest
@@ -195,7 +222,7 @@ jobs:
           echo "Deploy irentstuff_rentals_get - ${{ steps.set_irentstuff_rentals_get_output.outputs.deploy_irentstuff_rentals_get }}"
           echo "Deploy irentstuff_rental_user - ${{ steps.set_irentstuff_rental_user_output.outputs.deploy_irentstuff_rental_user }}"
 
-  # Stage 4a: Deploy irentstuff_authenticate_user if triggered
+  # Stage 5a: Deploy irentstuff_authenticate_user if triggered
   deploy_irentstuff_authenticate_user:
     name: Deploy irentstuff_authenticate_user Lambda
     runs-on: ubuntu-latest
@@ -231,7 +258,7 @@ jobs:
         run: |
           aws lambda update-function-code --function-name irentstuff-authenticate-user --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_authenticate_user/irentstuff_authenticate_user.zip
 
-  # Stage 4b: Deploy irentstuff_purchase_add if triggered
+  # Stage 5b: Deploy irentstuff_purchase_add if triggered
   deploy_irentstuff_purchase_add:
     name: Deploy irentstuff_purchase_add Lambda
     runs-on: ubuntu-latest
@@ -267,7 +294,7 @@ jobs:
         run: |
           aws lambda update-function-code --function-name irentstuff-purchase-add --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_purchase_add/irentstuff_purchase_add.zip
 
-  # Stage 4c: Deploy irentstuff_purchase_update if triggered
+  # Stage 5c: Deploy irentstuff_purchase_update if triggered
   deploy_irentstuff_purchase_update:
     name: Deploy irentstuff_purchase_update Lambda
     runs-on: ubuntu-latest
@@ -303,7 +330,7 @@ jobs:
         run: |
           aws lambda update-function-code --function-name irentstuff-purchase-update --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_purchase_update/irentstuff_purchase_update.zip
 
-  # Stage 4d: Deploy irentstuff_purchase_get if triggered
+  # Stage 5d: Deploy irentstuff_purchase_get if triggered
   deploy_irentstuff_purchase_get:
     name: Deploy irentstuff_purchase_get Lambda
     runs-on: ubuntu-latest
@@ -339,7 +366,7 @@ jobs:
         run: |
           aws lambda update-function-code --function-name irentstuff-purchase-get --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_purchase_get/irentstuff_purchase_get.zip
 
-  # Stage 4e: Deploy irentstuff_purchase_user if triggered
+  # Stage 5e: Deploy irentstuff_purchase_user if triggered
   deploy_irentstuff_purchase_user:
     name: Deploy irentstuff_purchase_user Lambda
     runs-on: ubuntu-latest
@@ -375,7 +402,7 @@ jobs:
         run: |
           aws lambda update-function-code --function-name irentstuff-purchase-user --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_purchase_user/irentstuff_purchase_user.zip
 
-  # Stage 4f: Deploy irentstuff_rental_add if triggered
+  # Stage 5f: Deploy irentstuff_rental_add if triggered
   deploy_irentstuff_rental_add:
     name: Deploy irentstuff_rental_add Lambda
     runs-on: ubuntu-latest
@@ -411,7 +438,7 @@ jobs:
         run: |
           aws lambda update-function-code --function-name irentstuff-rental-add --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_rental_add/irentstuff_rental_add.zip
 
-  # Stage 4g: Deploy irentstuff_rental_update if triggered
+  # Stage 5g: Deploy irentstuff_rental_update if triggered
   deploy_irentstuff_rental_update:
     name: Deploy irentstuff_rental_update Lambda
     runs-on: ubuntu-latest
@@ -447,7 +474,7 @@ jobs:
         run: |
           aws lambda update-function-code --function-name irentstuff-rental-update --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_rental_update/irentstuff_rental_update.zip
 
-  # Stage 4h: Deploy irentstuff_rentals_get if triggered
+  # Stage 5h: Deploy irentstuff_rentals_get if triggered
   deploy_irentstuff_rentals_get:
     name: Deploy irentstuff_rentals_get Lambda
     runs-on: ubuntu-latest
@@ -483,7 +510,7 @@ jobs:
         run: |
           aws lambda update-function-code --function-name irentstuff-rentals-get --zip-file fileb://$GITHUB_WORKSPACE/irentstuff_rentals_get/irentstuff_rentals_get.zip
 
-  # Stage 4i: Deploy irentstuff_rental_user if triggered
+  # Stage 5i: Deploy irentstuff_rental_user if triggered
   deploy_irentstuff_rental_user:
     name: Deploy irentstuff_rental_user Lambda
     runs-on: ubuntu-latest
