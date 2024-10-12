@@ -322,8 +322,11 @@ def add_purchase(event, context):
                     "sender": requestor
                 }
 
-                message_response = send_message(content)
-                log.info(f"Message response: {message_response}")
+                try:
+                    message_response = send_message(content)
+                    log.info(f"Message response: {message_response}")
+                except Exception as e:
+                    log.error(f"Failed to send message: {e}")
 
                 if rentals["status_code"] != 200:
                     return {
