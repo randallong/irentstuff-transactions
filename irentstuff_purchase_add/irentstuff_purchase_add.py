@@ -80,6 +80,44 @@ def connect_to_db():
     return transactions_conn
 
 
+def send_message(content):
+    endpoint_url = "https://6z72j61l2b.execute-api.ap-southeast-1.amazonaws.com/dev/"
+    apigw_client = boto3.client('apigatewaymanagementapi', endpoint_url=endpoint_url)
+
+    try:
+        # Extract necessary details from the content or environment variables
+        connection_id = content.get('connectionId')  # You'll need the connection ID of the WebSocket connection
+
+        # Format the message payload
+        message_data = {
+            "action": "sendmessage",
+            "message": content.get('new_message', 'Test message'),
+            "itemid": content.get('item_id', 'default_item_id'),
+            "ownerid": content.get('owner_id', 'default_owner_id'), # looks like there's an error here?
+            "renterid": content.get('renter_id', 'default_renter_id'),
+            "sender": content.get('username', 'default_username'),
+            "timestamp": datetime.now().isoformat(),
+            "admin": content.get('admin', 'offer')  # or 'accept'
+        }
+
+        # Send the message to the WebSocket client via API Gateway Management API
+        response = apigw_client.post_to_connection(
+            ConnectionId=connection_id,
+            Data=json.dumps(message_data)
+        )
+
+        return {
+            'statusCode': 200,
+            'body': f"Message sent to connection {connection_id}: {response}"
+        }
+
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'body': f"Error sending message: {str(e)}"
+        }
+
+
 def response_headers(content_type: str):
     headers = {
         'Access-Control-Allow-Origin': '*',
@@ -275,6 +313,17 @@ def add_purchase(event, context):
 
                 rentals = check_item_rental_status(transactions_conn, item_id)
                 log.info(rentals)
+
+                content = {
+                    "new_message": "I'd like to rent your item!",
+                    "item_id": item_id,
+                    "owner_id": item_owner,
+                    "renter_id": requestor,
+                    "sender": requestor
+                }
+
+                message_response = send_message(content)
+                log.info(f"Message response: {message_response}")
 
                 if rentals["status_code"] != 200:
                     return {
