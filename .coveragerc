@@ -34,6 +34,7 @@ omit =
     */irentstuff_purchase*/test_*
     */irentstuff_authenticate*/test_*
     *six.py*
+    */websocket/*
 
 [report]
 exclude_lines = 

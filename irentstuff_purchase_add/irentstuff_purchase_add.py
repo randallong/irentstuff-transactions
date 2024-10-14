@@ -22,6 +22,7 @@ import requests
 import sys
 
 from datetime import datetime, date
+from websocket import create_connection  # install package in repo. Also figure out if can prevent deploy to Lambda
 
 log = logging.getLogger()
 log.setLevel(logging.INFO)
@@ -81,40 +82,38 @@ def connect_to_db():
 
 
 def send_message(content):
-    endpoint_url = "https://6z72j61l2b.execute-api.ap-southeast-1.amazonaws.com/dev/"
-    apigw_client = boto3.client('apigatewaymanagementapi', endpoint_url=endpoint_url)
-
     try:
-        # Extract necessary details from the content or environment variables
-        connection_id = content.get('connectionId')  # You'll need the connection ID of the WebSocket connection
+        token = content.get("token")
+        ws = create_connection(f"wss://6z72j61l2b.execute-api.ap-southeast-1.amazonaws.com/dev/?token={token}")
+        log.info("WebSocket connection opened")
 
-        # Format the message payload
-        message_data = {
+        message = {
             "action": "sendmessage",
-            "message": content.get('new_message', 'Test message'),
-            "itemid": content.get('item_id', 'default_item_id'),
-            "ownerid": content.get('owner_id', 'default_owner_id'), # looks like there's an error here?
-            "renterid": content.get('renter_id', 'default_renter_id'),
-            "sender": content.get('username', 'default_username'),
-            "timestamp": datetime.now().isoformat(),
-            "admin": content.get('admin', 'offer')  # or 'accept'
+            "message": "Admin message",
+            "itemid": content.get("itemId"),
+            "ownerid": content.get("ownerid"),
+            "renterid": content.get("renterId"),
+            "sender": content.get("username"),
+            "timestamp": datetime.utcnow().isoformat(),
+            "admin": "offered"
         }
-
-        # Send the message to the WebSocket client via API Gateway Management API
-        response = apigw_client.post_to_connection(
-            ConnectionId=connection_id,
-            Data=json.dumps(message_data)
-        )
+        log.info(json.dumps(message))
+        ws.send(json.dumps(message))
+        log.info("Message sent")
+        result = ws.recv()
+        log.info("Received '%s'" % result)
+        ws.close()
+        log.info("Message successfully sent!")
 
         return {
-            'statusCode': 200,
-            'body': f"Message sent to connection {connection_id}: {response}"
+            "statusCode": 200,
+            "body": "WebSocket connection initiated"
         }
-
     except Exception as e:
+        log.error("Message failed to send!")
         return {
-            'statusCode': 500,
-            'body': f"Error sending message: {str(e)}"
+            "statusCode": 500,
+            "body": f"Error encountered: {e}"
         }
 
 
@@ -315,18 +314,15 @@ def add_purchase(event, context):
                 log.info(rentals)
 
                 content = {
-                    "new_message": "I'd like to rent your item!",
-                    "item_id": item_id,
-                    "owner_id": item_owner,
-                    "renter_id": requestor,
-                    "sender": requestor
+                    "token": clean_token,
+                    "itemId": item_id,
+                    "ownerid": item_owner,
+                    "renterId": requestor,
+                    "username": requestor
                 }
 
-                try:
-                    message_response = send_message(content)
-                    log.info(f"Message response: {message_response}")
-                except Exception as e:
-                    log.error(f"Failed to send message: {e}")
+                message_response = send_message(content)
+                log.info(message_response)
 
                 if rentals["status_code"] != 200:
                     return {
