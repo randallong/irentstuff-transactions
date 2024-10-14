@@ -22,7 +22,7 @@ import requests
 import sys
 
 from datetime import datetime, date
-from websocket import create_connection  # install package in repo. Also figure out if can prevent deploy to Lambda
+from websocket import create_connection
 
 log = logging.getLogger()
 log.setLevel(logging.INFO)
@@ -94,7 +94,7 @@ def send_message(content):
             "ownerid": content.get("ownerid"),
             "renterid": content.get("renterId"),
             "sender": content.get("username"),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now().isoformat(),
             "admin": "offered"
         }
         log.info(json.dumps(message))
@@ -337,5 +337,10 @@ def add_purchase(event, context):
                     return create_purchase_entry(transactions_conn, event, item_id)
             except Exception as e:
                 log.error(e)
+                return {
+                    "statusCode": 500,
+                    "headers": {"Content-Type": "text/plain"},
+                    "body": f"An error occurred while adding the rental: {e}"
+                }
             finally:
                 transactions_conn.close()

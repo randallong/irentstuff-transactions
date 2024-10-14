@@ -25,6 +25,9 @@ import pymysql
 import requests
 import sys
 
+from datetime import datetime, date
+from websocket import create_connection
+
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 
@@ -81,6 +84,42 @@ def connect_to_db():
         log.error("Exiting due to connection failure.")
         sys.exit(1)
     return transactions_conn
+
+
+def send_message(content):
+    try:
+        token = content.get("token")
+        ws = create_connection(f"wss://6z72j61l2b.execute-api.ap-southeast-1.amazonaws.com/dev/?token={token}")
+        log.info("WebSocket connection opened")
+
+        message = {
+            "action": "sendmessage",
+            "message": "Admin message",
+            "itemid": content.get("itemId"),
+            "ownerid": content.get("ownerid"),
+            "renterid": content.get("renterId"),
+            "sender": content.get("username"),
+            "timestamp": datetime.utcnow().isoformat(),
+            "admin": "offered"
+        }
+        log.info(json.dumps(message))
+        ws.send(json.dumps(message))
+        log.info("Message sent")
+        result = ws.recv()
+        log.info("Received '%s'" % result)
+        ws.close()
+        log.info("Message successfully sent!")
+
+        return {
+            "statusCode": 200,
+            "body": "WebSocket connection initiated"
+        }
+    except Exception as e:
+        log.error("Message failed to send!")
+        return {
+            "statusCode": 500,
+            "body": f"Error encountered: {e}"
+        }
 
 
 def response_headers(content_type: str):
@@ -284,6 +323,18 @@ def add_rental(event, context):
 
                 rentals = check_item_rental_status(transactions_conn, item_id)
                 log.info(rentals)
+
+                content = {
+                    "token": clean_token,
+                    "itemId": item_id,
+                    "ownerid": item_owner,
+                    "renterId": requestor,
+                    "username": requestor
+                }
+
+                message_response = send_message(content)
+                log.info(message_response)
+
                 if rentals["status_code"] != 200:
                     return {
                         "statusCode": rentals["status_code"],
