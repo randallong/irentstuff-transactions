@@ -311,9 +311,9 @@ jobs:
             -x "PyMySQL-1.1.1.dist-info/*" \
             -x "requests/*" \
             -x "requests-2.32.3.dist-info/*" \
-            -x "urllib3/*" \"
+            -x "urllib3/*" \
             -x "urllib3-2.2.2.dist-info/*" \
-            -x "websocket/*" \"
+            -x "websocket/*" \
             -x "websocket_client-1.8.0.dist-info/*" \
 
       - name: Deploy irentstuff_purchase_add Lambda
