@@ -12,6 +12,7 @@ from unittest.mock import patch, MagicMock
 from irentstuff_purchase_update import (
     invoke_auth_lambda,
     connect_to_db,
+    send_message,
     response_headers,
     retrieve_updated_purchase,
     update_db,
@@ -93,6 +94,56 @@ class TestConnectToDB(TestCase):
 
         # Assert that sys.exit was called with the correct exit code
         mock_exit.assert_called_once_with(1)
+
+
+class TestSendMessage(TestCase):
+
+    @patch("irentstuff_purchase_update.create_connection")  # Mock the WebSocket connection
+    @patch("irentstuff_purchase_update.log")  # Mock logging
+    def test_send_message_success(self, mock_log, mock_create_connection):
+        # Arrange
+        ws_mock = MagicMock()
+        mock_create_connection.return_value = ws_mock
+        ws_mock.recv.return_value = "Success message"  # Mock receiving a WebSocket response
+
+        content = {
+            "token": "test_token",
+            "itemId": "test_item",
+            "ownerid": "test_owner",
+            "renterId": "test_renter",
+            "username": "test_user"
+        }
+
+        # Act
+        response = send_message(content)
+
+        # Assert
+        mock_create_connection.assert_called_once_with("wss://6z72j61l2b.execute-api.ap-southeast-1.amazonaws.com/dev/?token=test_token")
+        self.assertEqual(response, {
+            "statusCode": 200,
+            "body": "WebSocket connection initiated"
+        })
+        ws_mock.send.assert_called_once()  # Ensure the message was sent
+        ws_mock.close.assert_called_once()  # Ensure the WebSocket connection was closed
+        mock_log.info.assert_called()  # Check that logs were recorded
+
+    @patch("irentstuff_purchase_update.create_connection", side_effect=Exception("Connection failed"))  # Mock failure
+    @patch("irentstuff_purchase_update.log")
+    def test_send_message_failure(self, mock_log, mock_create_connection):
+        # Arrange
+        content = {
+            "token": "invalid_token"
+        }
+
+        # Act
+        response = send_message(content)
+
+        # Assert
+        self.assertEqual(response, {
+            "statusCode": 500,
+            "body": "Error encountered: Connection failed"
+        })
+        mock_log.error.assert_called_once_with("Message failed to send!")
 
 
 class TestResponseHeaders:
