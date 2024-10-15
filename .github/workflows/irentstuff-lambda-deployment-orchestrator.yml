@@ -403,7 +403,21 @@ jobs:
       - name: Package irentstuff_purchase_get Lambda
         run: |
           cd $GITHUB_WORKSPACE/irentstuff_purchase_get
-          zip -r irentstuff_purchase_get.zip . -x "test_irentstuff_purchase_get.py"
+          zip -r irentstuff_purchase_get.zip . \
+            -x "test_irentstuff_purchase_get.py" \
+            -x "requirements.txt" \
+            -x "certifi/*" \
+            -x "certifi-2024.8.30.dist-info/*" \
+            -x "charset_normalizer/*" \
+            -x "charset_normalizer-3.3.2.dist-info/*" \
+            -x "idna/*" \
+            -x "idna-3.8.dist-info/*" \
+            -x "pymysql/*" \
+            -x "PyMySQL-1.1.1.dist-info/*" \
+            -x "requests/*" \
+            -x "requests-2.32.3.dist-info/*" \
+            -x "urllib3/*" \
+            -x "urllib3-2.2.2.dist-info/*" \
 
       - name: Deploy irentstuff_purchase_get Lambda
         run: |
@@ -439,7 +453,21 @@ jobs:
       - name: Package irentstuff_purchase_user Lambda
         run: |
           cd $GITHUB_WORKSPACE/irentstuff_purchase_user
-          zip -r irentstuff_purchase_user.zip . -x "test_irentstuff_purchase_user.py"
+          zip -r irentstuff_purchase_user.zip . \
+            -x "test_irentstuff_purchase_user.py" \
+            -x "requirements.txt" \
+            -x "certifi/*" \
+            -x "certifi-2024.8.30.dist-info/*" \
+            -x "charset_normalizer/*" \
+            -x "charset_normalizer-3.3.2.dist-info/*" \
+            -x "idna/*" \
+            -x "idna-3.8.dist-info/*" \
+            -x "pymysql/*" \
+            -x "PyMySQL-1.1.1.dist-info/*" \
+            -x "requests/*" \
+            -x "requests-2.32.3.dist-info/*" \
+            -x "urllib3/*" \
+            -x "urllib3-2.2.2.dist-info/*" \
 
       - name: Deploy irentstuff_purchase_user Lambda
         run: |
@@ -579,7 +607,21 @@ jobs:
       - name: Package irentstuff_rentals_get Lambda
         run: |
           cd $GITHUB_WORKSPACE/irentstuff_rentals_get
-          zip -r irentstuff_rentals_get.zip . -x "test_irentstuff_rentals_get.py"
+          zip -r irentstuff_rentals_get.zip . \
+            -x "test_irentstuff_rentals_get.py" \
+            -x "requirements.txt" \
+            -x "certifi/*" \
+            -x "certifi-2024.8.30.dist-info/*" \
+            -x "charset_normalizer/*" \
+            -x "charset_normalizer-3.3.2.dist-info/*" \
+            -x "idna/*" \
+            -x "idna-3.8.dist-info/*" \
+            -x "pymysql/*" \
+            -x "PyMySQL-1.1.1.dist-info/*" \
+            -x "requests/*" \
+            -x "requests-2.32.3.dist-info/*" \
+            -x "urllib3/*" \
+            -x "urllib3-2.2.2.dist-info/*" \
 
       - name: Deploy irentstuff_rentals_get Lambda
         run: |
@@ -615,7 +657,21 @@ jobs:
       - name: Package irentstuff_rental_user Lambda
         run: |
           cd $GITHUB_WORKSPACE/irentstuff_rental_user
-          zip -r irentstuff_rental_user.zip . -x "test_irentstuff_rental_user.py"
+          zip -r irentstuff_rental_user.zip . \
+            -x "test_irentstuff_rental_user.py" \
+            -x "requirements.txt" \
+            -x "certifi/*" \
+            -x "certifi-2024.8.30.dist-info/*" \
+            -x "charset_normalizer/*" \
+            -x "charset_normalizer-3.3.2.dist-info/*" \
+            -x "idna/*" \
+            -x "idna-3.8.dist-info/*" \
+            -x "pymysql/*" \
+            -x "PyMySQL-1.1.1.dist-info/*" \
+            -x "requests/*" \
+            -x "requests-2.32.3.dist-info/*" \
+            -x "urllib3/*" \
+            -x "urllib3-2.2.2.dist-info/*" \
 
       - name: Deploy irentstuff_rental_user Lambda
         run: |
