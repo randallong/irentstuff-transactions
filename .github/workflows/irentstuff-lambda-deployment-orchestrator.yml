@@ -263,7 +263,35 @@ jobs:
       - name: Package irentstuff_authenticate_user Lambda
         run: |
           cd $GITHUB_WORKSPACE/irentstuff_authenticate_user
-          zip -r irentstuff_authenticate_user.zip . -x "test_irentstuff_authenticate_user.py"
+          zip -r irentstuff_authenticate_user.zip . \
+            -x "test_irentstuff_authenticate_user.py" \
+            -x "requirements.txt" \
+            -x "certifi/*" \
+            -x "certifi-2024.8.30.dist-info/*" \
+            -x "cffi/*" \
+            -x "cffi-1.17.1.dist-info/*" \
+            -x "charset_normalizer/*" \
+            -x "charset_normalizer-3.3.2.dist-info/*" \
+            -x "cryptography/*" \
+            -x "cryptography-43.0.1.dist-info/*" \
+            -x "ecdsa/*" \
+            -x "ecdsa-0.19.0.dist-info/*" \
+            -x "idna/*" \
+            -x "idna-3.8.dist-info/*" \
+            -x "jose/*" \
+            -x "pyasn1/*" \
+            -x "pyasn1-0.6.0.dist-info/*" \
+            -x "pycparser/*" \
+            -x "pycparser-2.22.dist-info/*" \
+            -x "python_jose-3.3.0.dist-info/*" \
+            -x "python-jose/*" \
+            -x "requests/*" \
+            -x "requests-2.32.3.dist-info/*" \
+            -x "rsa/*" \
+            -x "rsa-4.9.dist-info/*" \
+            -x "six-1.16.0.dist-info/*" \
+            -x "urllib3/*" \
+            -x "urllib3-2.2.2.dist-info/*" \
 
       - name: Deploy irentstuff_authenticate_user Lambda
         run: |
