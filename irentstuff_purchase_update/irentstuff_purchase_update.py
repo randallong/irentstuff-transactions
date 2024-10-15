@@ -268,7 +268,7 @@ def update_purchase_status(event, context):
 
                             # Update availability in items DB
                             update_availability_in_items_db(clean_token, item_id, availability="available")
-                            
+
                             # Send message
                             content["username"] = requestor
                             content["admin"] = "cancelled"
@@ -289,10 +289,10 @@ def update_purchase_status(event, context):
 
                             # Update availability in items DB
                             update_availability_in_items_db(clean_token, item_id, availability="available")
-                            
+
                             # Send message
                             content["username"] = item_owner
-                            content["admin"] = "completed"
+                            content["admin"] = "sold"
                             message_response = send_message(content)
                             log.info(message_response)
                         else:

@@ -23,6 +23,8 @@ import json
 import os
 import requests
 
+from websocket import create_connection
+
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 
@@ -79,6 +81,42 @@ def connect_to_db():
         log.error(e)
         sys.exit(1)
     return transactions_conn
+
+
+def send_message(content):
+    try:
+        token = content.get("token")
+        ws = create_connection(f"wss://6z72j61l2b.execute-api.ap-southeast-1.amazonaws.com/dev/?token={token}")
+        log.info("WebSocket connection opened")
+
+        message = {
+            "action": "sendmessage",
+            "message": "Admin message",
+            "itemid": content.get("itemId"),
+            "ownerid": content.get("ownerid"),
+            "renterid": content.get("renterId"),
+            "sender": content.get("username"),
+            "timestamp": datetime.now().isoformat(),
+            "admin": content.get("admin")
+        }
+        log.info(json.dumps(message))
+        ws.send(json.dumps(message))
+        log.info("Message sent")
+        result = ws.recv()
+        log.info("Received '%s'" % result)
+        ws.close()
+        log.info("Message successfully sent!")
+
+        return {
+            "statusCode": 200,
+            "body": "WebSocket connection initiated"
+        }
+    except Exception as e:
+        log.error("Message failed to send!")
+        return {
+            "statusCode": 500,
+            "body": f"Error encountered: {e}"
+        }
 
 
 def response_headers(content_type: str):
@@ -206,12 +244,25 @@ def update_rental_status(event, context):
                     item_renter = rental["renter_id"]
                     current_status = rental["status"]
 
+                    content = {
+                        "token": clean_token,
+                        "itemId": item_id,
+                        "ownerid": item_owner,
+                        "renterId": requestor
+                    }
+
                     # Confirm rental
                     if action == 'confirm' and current_status == 'offered':
                         if requestor == item_owner:
                             new_status = 'confirmed'
                             log.info(f"Request passed all authentication checks. Item will be {new_status}")
                             db_update = update_db(cursor, new_status, rental_id, item_id, transactions_conn)
+
+                            # Send message
+                            content["username"] = item_owner
+                            content["admin"] = "confirmed"
+                            message_response = send_message(content)
+                            log.info(message_response)
                         else:
                             log.error("Requestor is not item owner")
                             db_update = {"statusCode": 401,
@@ -227,6 +278,12 @@ def update_rental_status(event, context):
 
                             # Update availability in items DB
                             update_availability_in_items_db(clean_token, item_id, availability="active_rental")
+
+                            # Send message
+                            content["username"] = item_owner
+                            content["admin"] = "active"
+                            message_response = send_message(content)
+                            log.info(message_response)
                         else:
                             log.error("Requestor is not item owner")
                             db_update = {"statusCode": 401,
@@ -242,6 +299,12 @@ def update_rental_status(event, context):
 
                             # Update availability in items DB
                             update_availability_in_items_db(clean_token, item_id, availability="available")
+
+                            # Send message
+                            content["username"] = requestor
+                            content["admin"] = "cancelled"
+                            message_response = send_message(content)
+                            log.info(message_response)
                         else:
                             log.error("Requestor is not item owner or renter")
                             db_update = {"statusCode": 401,
@@ -257,6 +320,12 @@ def update_rental_status(event, context):
 
                             # Update availability in items DB
                             update_availability_in_items_db(clean_token, item_id, availability="available")
+
+                            # Send message
+                            content["username"] = item_owner
+                            content["admin"] = "completed"
+                            message_response = send_message(content)
+                            log.info(message_response)
                         else:
                             log.error("Requestor is not item owner")
                             db_update = {"statusCode": 401,
