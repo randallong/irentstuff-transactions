@@ -248,7 +248,7 @@ def update_rental_status(event, context):
                         "token": clean_token,
                         "itemId": item_id,
                         "ownerid": item_owner,
-                        "renterId": requestor
+                        "renterId": item_renter
                     }
 
                     # Confirm rental
