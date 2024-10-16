@@ -8,6 +8,7 @@ on:
 jobs:
   # Stage 1: Linting
   lint_with_flake8:
+    name: Lint with Flake8
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
