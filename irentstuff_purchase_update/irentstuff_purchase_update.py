@@ -288,7 +288,7 @@ def update_purchase_status(event, context):
                             db_update = update_db(cursor, new_status, purchase_id, item_id, transactions_conn)
 
                             # Update availability in items DB
-                            update_availability_in_items_db(clean_token, item_id, availability="available")
+                            update_availability_in_items_db(clean_token, item_id, availability="sold")
 
                             # Send message
                             content["username"] = item_owner
